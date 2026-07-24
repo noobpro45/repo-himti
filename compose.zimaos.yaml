@@ -4,7 +4,23 @@ services:
     image: laravelsail/php83-composer:latest
     container_name: sirdm-himti-app
     working_dir: /var/www/html
-    command: php artisan serve --host=0.0.0.0 --port=80
+    entrypoint:
+      - /bin/sh
+      - -c
+      - |
+        if [ ! -f artisan ]; then
+          git clone https://github.com/noobpro45/repo-himti.git .
+        fi
+        if [ ! -f .env ]; then
+          cp .env.example .env
+        fi
+        if [ ! -d vendor ]; then
+          composer install --ignore-platform-reqs
+        fi
+        php artisan key:generate --force
+        php artisan migrate --force
+        php artisan storage:link --force
+        php artisan serve --host=0.0.0.0 --port=80
     ports:
       - '8090:80'
     environment:
