@@ -1,32 +1,14 @@
 name: sirdm-himti
 services:
   app:
-    image: laravelsail/php83-composer:latest
+    image: serversideup/php:8.3-fpm-nginx
     container_name: sirdm-himti-app
-    working_dir: /var/www/html
-    entrypoint:
-      - /bin/sh
-      - -c
-      - |
-        if [ ! -f artisan ]; then
-          git clone https://github.com/noobpro45/repo-himti.git .
-        fi
-        if [ ! -f .env ]; then
-          cp .env.example .env
-        fi
-        if [ ! -d vendor ]; then
-          composer install --ignore-platform-reqs
-        fi
-        php artisan key:generate --force
-        php artisan migrate --force
-        php artisan storage:link --force
-        php artisan serve --host=0.0.0.0 --port=80
     ports:
-      - '8090:80'
+      - '8090:8080'
     environment:
-      WWWUSER: '1000'
-      WWWGROUP: '1000'
-      LARAVEL_SAIL: '1'
+      AUTORUN_ENABLED: 'true'
+      AUTORUN_LARAVEL_STORAGE_LINK: 'true'
+      AUTORUN_LARAVEL_MIGRATION: 'true'
       APP_ENV: 'local'
       APP_DEBUG: 'true'
       APP_URL: 'http://localhost:8090'
@@ -46,8 +28,8 @@ services:
         - container: DB_PASSWORD
           description: Database Password
       ports:
-        - container: '80'
-          description: Web UI Port
+        - container: '8080'
+          description: Web UI Port (Nginx)
       volumes:
         - container: /var/www/html
           description: Directory Source Code Application
