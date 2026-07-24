@@ -1,0 +1,71 @@
+name: sirdm-himti
+services:
+  app:
+    image: laravelsail/php83-app:latest
+    container_name: sirdm-himti-app
+    ports:
+      - '8090:80'
+    environment:
+      WWWUSER: '1000'
+      WWWGROUP: '1000'
+      LARAVEL_SAIL: '1'
+      APP_ENV: 'local'
+      APP_DEBUG: 'true'
+      APP_URL: 'http://localhost:8090'
+      DB_HOST: 'mysql'
+      DB_PORT: '3306'
+      DB_DATABASE: 'sirdm_himti'
+      DB_USERNAME: 'sail'
+      DB_PASSWORD: 'password'
+      REDIS_HOST: 'redis'
+    volumes:
+      - '/DATA/AppData/sirdm-himti:/var/www/html'
+    depends_on:
+      - mysql
+      - redis
+    x-casaos:
+      envs:
+        - container: DB_PASSWORD
+          description: Database Password
+      ports:
+        - container: '80'
+          description: Web UI Port
+      volumes:
+        - container: /var/www/html
+          description: Directory Source Code Application
+  mysql:
+    image: 'mysql:8.4'
+    container_name: sirdm-himti-db
+    environment:
+      MYSQL_ROOT_PASSWORD: 'password'
+      MYSQL_DATABASE: 'sirdm_himti'
+      MYSQL_USER: 'sail'
+      MYSQL_PASSWORD: 'password'
+      MYSQL_ALLOW_EMPTY_PASSWORD: '1'
+    volumes:
+      - 'sirdm-mysql:/var/lib/mysql'
+  redis:
+    image: 'redis:alpine'
+    container_name: sirdm-himti-redis
+    volumes:
+      - 'sirdm-redis:/data'
+volumes:
+  sirdm-mysql:
+    driver: local
+  sirdm-redis:
+    driver: local
+x-casaos:
+  architectures:
+    - amd64
+    - arm64
+  main: app
+  author: HIMTI UIN Jakarta
+  category: Media
+  description:
+    en_us: Sistem Informasi Repositori Dokumentasi Multimedia HIMTI
+  icon: https://raw.githubusercontent.com/noobpro45/repo-himti/main/public/logo-himti.png
+  port_map: '8090'
+  scheme: http
+  store_app_id: sirdm-himti
+  title:
+    en_us: SIRDM HIMTI
